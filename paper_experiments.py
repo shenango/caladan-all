@@ -268,9 +268,7 @@ def main():
     figure_9b_scheduling()
     figure_9c_controllers()
     figure_6_timeseries()
-    for lc in ["storage", "silo", "memcached"]:
-        for be in ["x264", "streamcluster", "streamDRAM", "swaptionsGC", None]:
-            lc_sweep(lc=lc, be=be, config='caladan')
+    figure_7_lc_be_combos()
 
     pass
 

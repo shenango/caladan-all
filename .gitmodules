@@ -1,0 +1,18 @@
+[submodule "shenango"]
+	path = shenango
+	url = git@github.com:abelay/shenango
+[submodule "memcached-linux"]
+	path = memcached-linux
+	url = git@github.com:shenango/memcached.git
+[submodule "memcached"]
+	path = memcached
+	url = git@github.com:shenango/memcached.git
+[submodule "silo"]
+	path = silo
+	url = git@github.com:shenango/silo.git
+[submodule "gc"]
+	path = gc
+	url = git@github.com:shenango/boehmGC
+[submodule "parsec"]
+	path = parsec
+	url = git@github.com:shenango/parsec.git

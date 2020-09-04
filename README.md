@@ -10,18 +10,24 @@ sudo apt install build-essential libnuma-dev clang autoconf autotools-dev m4 aut
 ```
 
 Install rust, and use the nightly toolchain. See http://rust-lang.org/ for details.
+```
+curl https://sh.rustup.rs -sSf | sh
+rustup default nightly
+```
 
 ## Compiling
 
 On the server machine, clone this repository in your home directory and build
 everything:
 ```
+cd caladan-artifact
 ./build_all.sh
 ```
 
 On each client machine, clone this repository in your home directory and build
 using:
 ```
+cd caladan-artifact
 ./build_client.sh
 ```
 

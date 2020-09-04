@@ -2,6 +2,8 @@ import pandas as pd
 import os, sys
 import json
 
+import summary
+
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
@@ -167,7 +169,6 @@ def graph_9b(fs):
     plt.savefig("figure_9b.pdf")
 
 def graph_9b(fs):
-    if not fs: return
     plt.clf()
     lines = 0
     for file in fs:
@@ -185,16 +186,39 @@ def graph_9b(fs):
     plt.xlabel("RPS")
     plt.savefig("figure_9b.pdf")
 
+def graph_9c(fs):
+    plt.clf()
+    lines = 0
+    for file in fs:
+        if "figure_9c" not in file: continue
+        name = file.split("figure_9c_")[1].replace("_", " ")
+        df = fs_to_dataframe({file: fs[file]})
+        print(name)
+        plt.plot(df['achieved'], df['p999'], label=name)
+        lines += 1
+    if not lines: return
+    plt.legend()
+    plt.ylabel("99.9th% (us)")
+    plt.xlabel("RPS")
+    plt.savefig("figure_9c.pdf")
+
 def main():
     fs = {}
     for f in sys.argv[1:]:
         if "memcached_trace" in f:
             import graph_timeseries
-            graph_timeseries.graph_experiment(f)
+            graph_timeseries.graph_experiment_figure6(f)
             continue
+        elif "multi" in f:
+            import graph_timeseries
+            graph_timeseries.graph_experiment_figure8(f)
+            continue
+        else:
+            summary.do_it_all(f)
         fs.update(read_file(f))
     graph_lc_combos({f: fs[f] for f in fs if "figure_7" in f})
     graph_9b(fs)
+    graph_9c(fs)
 
 if __name__ == '__main__':
     main()

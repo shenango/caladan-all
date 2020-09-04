@@ -1,5 +1,6 @@
 import os
 import sys
+from heapq import merge
 
 if sys.version_info[0] < 3:
     raise Exception("Python 3 is required.")
@@ -12,6 +13,8 @@ fig = plt.figure()
 gs = fig.add_gridspec(4, 4)
 axs = [fig.add_subplot(gs[i, :4]) for i in range(4)]
 
+cycles_per_us = None
+
 def readfile(f):
     WARMUP = 0
     dat = []
@@ -21,11 +24,16 @@ def readfile(f):
     is_sorted = True
     last_i = 0
     for line in d.splitlines():
+        if "ticks / us" in l:
+            global cycles_per_us
+            cycles_per_us = int(l.split("detected")[1].split()[0])
+            continue
+
         line = line.split("Trace: ")
         if len(line) < 2:
             continue
 
-        print("Reading latencies... (may take awhile)")
+        print("Reading full request trace... (may take awhile)")
         for tup in line[1].split()[:-1]:
             a, b, c = tup.split(":", 2)
             if ':' in c:
@@ -40,7 +48,7 @@ def readfile(f):
 
             d = int(d)
             is_sorted = is_sorted and last_i <= d
-            assert is_sorted
+            # assert is_sorted, "{} {} {}".format(last_i, d, f)
             last_i = d
 
             dat.append((d, a, c // 1000))
@@ -123,39 +131,69 @@ def parse_shmlog(arg, first_tsc, last_tsc, cycles_per_us):
         # ops / cycle, cycles per us
         ys.append(cycles_per_s / cycles_per_op)
     xs, ys, _z = windower(xs, ys, cycles_per_us, percentile='avg')
-    axs[3].plot(xs, ys)
+    lbl = arg.split("/")[-1].split("_shm_query")[0]
+    axs[3].plot(xs, ys, label=lbl)
     axs[3].set_ylabel("BE Tput\n(Op/s)")
+    axs[3].legend()
 
-
-def graph_experiment(directory):
+def graph_experiment_figure6(directory):
     earliest_ts, latest_ts = 0, 0
     files = os.listdir(directory)
     with open("{}/memcached.out".format(directory)) as f:
         dat = f.read()
     cycles_per_us = int(dat.split("time: detected ")[1].split()[0])
     for f in files:
-        if f.endswith(".out"):
+        if f.endswith(".memcached.out"):
             latencytrace = readfile(directory + "/" + f)
             if not latencytrace:
                 continue
             tm_tsc, tm, lat = zip(*latencytrace)
             x,y,z = windower(tm_tsc, lat, cycles_per_us)
             print(len(x), len(y), len(z))
-            axs[0].plot(x,y)
+            name = f.split(".")[-2]
+            axs[0].plot(x,y, label=name)
             axs[0].set_ylabel("99.9% Lat. (us)")
-            axs[1].plot(x,z)
+            axs[1].plot(x,z, label=name)
             axs[1].set_ylabel("LC\nThroughput")
             axs[1].set_ylim(0, 1.25 * max(z))
             earliest_ts = tm_tsc[0]
             latest_ts = tm_tsc[-1]
+    axs[1].legend()
+    axs[0].legend()
     read_mem(directory, earliest_ts, latest_ts, cycles_per_us)
     parse_shmlog("{}/swaptionsGC_shm_query.out".format(directory), earliest_ts, latest_ts, cycles_per_us)
     plt.xlabel("Time (s)")
     w, h = fig.get_size_inches()
     fig.set_size_inches(w*1.5, h*1.5)
     fig.tight_layout()
-    plt.savefig("caladan_timeseries_experiment.pdf")
+    plt.savefig("figure_6_caladan.pdf")
+
+def graph_experiment_figure8(directory):
+    earliest_ts, latest_ts = 0, 0
+    files = os.listdir(directory)
+    dats = []
+    memcs = []
+    for f in files:
+        if f.endswith(".memcached.out"):
+            memcs.append(readfile(directory + "/" + f))
+        elif f.endswith(".silo.out"):
+            dats['silo'] = zip(*readfile(directory + "/" + f))
+        elif f.endswith(".storage.out"):
+            dats['storage'] = zip(*readfile(directory + "/" + f))
+    dats['memcached'] = zip(*list(merge(*memcs)))
+    min_tsc = min(dats[app][0][0] for app in dats)
+    max_tsc = max(dats[app][0][-1] for app in dats)
+    for app, dat in dats.items():
+        x,y,z = windower(dat[0], dat[2], cycles_per_us)
+        print(len(x), len(y), len(z))
+        axs[0].plot(x,y, label=app)
+        axs[0].set_ylabel("99.9% Lat. (us)")
+        axs[1].plot(x,z, label=app)
+        axs[1].set_ylabel("LC\nThroughput")
+        axs[1].set_ylim(0, 1.25 * max(z))
+    axs[1].legend()
+    axs[0].legend()
+    read_mem(directory, min_tsc, max_tsc, cycles_per_us)
+    
 
 
-if __name__ == '__main__':
-    graph_experiment(sys.argv[1])

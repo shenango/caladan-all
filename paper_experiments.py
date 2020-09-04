@@ -193,7 +193,7 @@ def multi_time_step(
             sl['custom_conf'].append('runtime_ht_punish_us 25')
         if spin:
             sl['spin'] = SILO_T
-        ch += new_measurement_instances(2, sl,
+        ch += new_measurement_instances(1, sl,
                                         0.50 * SILO_T / 22.0, x, nconns=200)
 
     if "storage" in lcs:
@@ -277,12 +277,12 @@ def figure_9b_scheduling():
 
 
 def figure_9c_controllers():
-    lc_sweep(lc='storage', be='hammer', config='caladan_nobw',
+    lc_sweep(lc='storage', be='streamDRAM', config='caladan_nobw',
              htparam=0, name="figure_9c_No_Controllers")
-    lc_sweep(lc='storage', be='hammer', config='caladan',
+    lc_sweep(lc='storage', be='streamDRAM', config='caladan',
              htparam=0, name="figure_9c_BW")
-    lc_sweep(lc='storage', be='hammer',
-             config='caladan', name="igure_9c_BW_and_HT")
+    lc_sweep(lc='storage', be='streamDRAM',
+             config='caladan', name="figure_9c_BW_and_HT")
     lc_sweep(lc='storage', be=None, config='caladan',
              name="figure_9c_No_Colocation")
 
@@ -292,8 +292,8 @@ def main():
     # figure_9b_scheduling()
     # figure_9c_controllers()
     # exit(0)
-    figure_6_timeseries()
-    for lc in ["silo"]:
+    # figure_6_timeseries()
+    for lc in ["storage", "silo", "memcached"]:
         for be in ["x264", "streamcluster", "streamDRAM", "swaptionsGC", None]:
             lc_sweep(lc=lc, be=be, config='caladan')
 

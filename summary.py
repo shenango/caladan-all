@@ -399,10 +399,11 @@ def do_it_all(dirname):
 
     STAT_F = "{}/stats/".format(dirname)
     RES_F = STAT_F + "results.json"
-    exp = parse_dir(dirname)
-    os.system("mkdir -p " + STAT_F)
-    with open(RES_F, "w") as f:
-        f.write(json.dumps(exp))
+    if not os.access(RES_F, os.F_OK):
+        exp = parse_dir(dirname)
+        os.system("mkdir -p " + STAT_F)
+        with open(RES_F, "w") as f:
+            f.write(json.dumps(exp))
 
 
 def main():

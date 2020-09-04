@@ -4,6 +4,12 @@ This repository includes Caladan and several applications that were evaluated in
 
 This repository also includes several scripts to facilitate building the applications and running experiments from the paper.
 
+## Supported Hardware and Software
+
+This code was tested on Ubuntu 18.04 kernel version 5.2.0 on a server with a Mellanox ConnectX-5 40Gb/s NIC and an Intel Optane SSD.
+
+Client machines require either an Intel 82599 based-NIC or a ConnectX-{3,4,5} Mellanox NIC.
+
 ## Installing prereqs
 ```
 sudo apt install build-essential libnuma-dev clang autoconf autotools-dev m4 automake libevent-dev  libpcre++-dev libtool ragel libev-dev moreutils parallel cmake python3 python3-pip libjemalloc-dev libaio-dev libdb5.3++-dev numactl hwloc

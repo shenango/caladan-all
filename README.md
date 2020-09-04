@@ -2,7 +2,10 @@
 
 This repository includes Caladan and several applications that were evaluated in the Caladan paper submitted to OSDI '20.
 
-This repository also includes several scripts to facilitate building the applications and running experiments from the paper.
+The main Caladan source code repository is linked as a submodule (caladan-ae).
+It contains instructions for getting started with Caladan, and more details on supported platforms and use cases.
+
+This repository contains scripts to facilitate building the applications used in the evaluation and running experiments from the paper.
 
 ## Supported Hardware and Software
 
@@ -69,4 +72,3 @@ Each machine is assumed to have (A) a management interface with its own address 
 To run the experiments, follow the above instructions to build and setup your environment. Run `python3 paper_experiments.py` to run all the experiments. The total runtime depends on the configured number of samples and sample durations (found at the top of `paper_experiments.py`).
 
 After the experiments complete, run `python3 graph.py run.2*` to generate graphs from each experiment (saved as pdfs).
-

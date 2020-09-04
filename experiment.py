@@ -41,6 +41,8 @@ NEXT_CLIENT_ASSIGN = 0
 
 
 def new_experiment(system, **kwargs):
+    global NEXT_CLIENT_ASSIGN
+    NEXT_CLIENT_ASSIGN = 0
     from os import path
     from glob import glob
     x = {

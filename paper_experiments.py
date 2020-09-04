@@ -104,7 +104,7 @@ def lc_sweep(lc='memcached', be='streamcluster', config='caladan', samples=NSAMP
     elif lc == 'silo':
         if mpps is None:
             rep_external_partial(lc_sweep, start_mpps, silomppsoverride or 0.65,
-                                 samples, lc=lc, be=be, config=config, time=time, htparam=htparam)
+                                 samples, lc=lc, be=be, config=config, time=time, htparam=htparam, name=name)
             return
         l = new_silo_server(cores, x)
         l['mem'] = 3 * (1 << 30)

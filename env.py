@@ -53,7 +53,7 @@ THISHOST = check_output("hostname -s", shell=True).strip().decode('utf-8')
 SCRIPT_DIR = path.split(path.realpath(__file__))[0]
 
 from base_dir import BASE_DIR
-SDIR = "{}/shenango".format(BASE_DIR)
+SDIR = "{}/caladan-ae".format(BASE_DIR)
 ZDIR = "{}/zygos-bench/".format(BASE_DIR)
 CLIENT_BIN = "{}/apps/synthetic/target/release/synthetic".format(SDIR)
 OBSERVER = None

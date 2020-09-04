@@ -235,7 +235,7 @@ def multi_time_step(cfg='caladan', trace_enabled=True):
 
 
 def figure_7_lc_be_combos():
-    for lc in ["silo", "memcached", "storagee"]:
+    for lc in ["memcached", "storage", "silo"]:
         for be in ["x264", "streamcluster", "streamDRAM", "swaptionsGC", None]:
             lc_sweep(lc=lc, be=be, name="figure_7")
 
@@ -264,11 +264,11 @@ def figure_9c_controllers():
              name="figure_9c_No_Colocation")
 
 def main():
+    figure_7_lc_be_combos()
     figure_8_multi_app_timeseries()
     figure_9b_scheduling()
     figure_9c_controllers()
     figure_6_timeseries()
-    figure_7_lc_be_combos()
 
     pass
 

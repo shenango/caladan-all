@@ -1,5 +1,5 @@
 [submodule "shenango"]
-	path = shenango
+	path = caladan-ae
 	url = https://github.com/joshuafried/caladan-ae
 [submodule "memcached-linux"]
 	path = memcached-linux

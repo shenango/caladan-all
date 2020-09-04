@@ -10,18 +10,18 @@ echo "BASE_DIR = '${SCRIPTPATH}/'" > base_dir.py
 
 CORES=`getconf _NPROCESSORS_ONLN`
 
-git submodule update --init -f --recursive shenango
+git submodule update --init -f --recursive caladan-ae
 
 if lspci | grep -q 'ConnectX-3'; then
-  sed "s/CONFIG_MLX4=.*/CONFIG_MLX4=y/g" -i shenango/build/config
+  sed "s/CONFIG_MLX4=.*/CONFIG_MLX4=y/g" -i caladan-ae/build/config
 elif lspci | grep -q 'ConnectX-[4,5]'; then
   for config in MLX5 DIRECTPATH; do
-    sed "s/CONFIG_${config}=.*/CONFIG_${config}=y/g" -i shenango/build/config
+    sed "s/CONFIG_${config}=.*/CONFIG_${config}=y/g" -i caladan-ae/build/config
   done
 fi
 
 echo building DPDK
-pushd shenango
+pushd caladan-ae
 patch -p 1 -d dpdk/ < build/ixgbe_19_11.patch
 if lspci | grep -q 'ConnectX-[4,5]'; then
   patch -p 1 -d dpdk/ < build/mlx5_19_11.patch

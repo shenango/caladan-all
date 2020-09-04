@@ -1,6 +1,6 @@
 [submodule "shenango"]
 	path = shenango
-	url = https://github.com/shenango/shenango
+	url = https://github.com/joshuafried/caladan-ae
 [submodule "memcached-linux"]
 	path = memcached-linux
 	url = https://github.com/shenango/memcached.git

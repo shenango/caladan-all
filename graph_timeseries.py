@@ -149,7 +149,7 @@ def graph_experiment(directory):
             earliest_ts = tm_tsc[0]
             latest_ts = tm_tsc[-1]
     read_mem(directory, earliest_ts, latest_ts, cycles_per_us)
-    parse_shmlog("{}/swaptions_shm_query.out".format(directory), earliest_ts, latest_ts, cycles_per_us)
+    parse_shmlog("{}/swaptionsGC_shm_query.out".format(directory), earliest_ts, latest_ts, cycles_per_us)
     plt.xlabel("Time (s)")
     w, h = fig.get_size_inches()
     fig.set_size_inches(w*1.5, h*1.5)

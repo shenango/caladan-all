@@ -1,5 +1,5 @@
 from env import *
-from experiment import alloc_ip, alloc_port, add_app, gen_random_mac, new_swaptions_inst
+from experiment import *
 
 def new_stress_shm_inst(threads, experiment, **kwargs):
     x = {
@@ -194,6 +194,11 @@ def hammer(cores, experiment, **kwargs):
     s = new_stress_shm_query(lc, experiment)
     return lc, s
 
+def sqrt(cores, experiment, **kwargs):
+    lc = new_stress_shm_inst(cores, experiment, **kwargs)
+    s = new_stress_shm_query(lc, experiment)
+    return lc, s
+
 def hammersmall(cores, experiment, **kwargs):
     lc = new_stress_shm_inst(cores, experiment, **kwargs)
     lc['fakework'] = 'cacheantagonist:2000000'
@@ -207,7 +212,33 @@ BE_CONFIGS = {
     'x264': x264,
     'streamDRAM': hammer,
     'hammersmall': hammersmall,
+    'sqrt': sqrt,
 }
+
+def new_synthetic_server(threads, experiment, **kwargs):
+    x = {
+        'name': kwargs.get('name', 'synth'),
+        'ip': alloc_ip(experiment),
+        'port': alloc_port(experiment),
+        'threads': threads,
+        'guaranteed': threads,
+        'spin': 0,
+        'app': 'synthetic',
+        'nice': -20,
+        'mac': gen_random_mac(),
+        'protocol': 'synthetic',
+        'transport': kwargs.get('transport', 'tcp'),
+        'fakework': kwargs.get('fakework', 'stridedmem:1024:7'),
+        'args': "--mode={stype}-server {ip}:{port} --threads {threads} --transport {transport}"
+    }
+
+    x['args'] += " --fakework {fakework}"
+    if experiment["system"] == "shenango":
+        x['stype'] = 'spawner'
+    elif "linux" in experiment['system']:  # == "linux-floating":
+        x['args'] = "{fakework} {threads} {port}"
+    add_app(experiment, x, **kwargs)
+    return x
 
 
 def configure_caladan(name, experiment, host=None):

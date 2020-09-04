@@ -44,7 +44,7 @@ def new_experiment(system, **kwargs):
     from os import path
     from glob import glob
     x = {
-        'name': "run.{}-{}".format(datetime.now().strftime('%Y%m%d%H%M%S'), system),
+        'name': "run.{}".format(datetime.now().strftime('%Y%m%d%H%M%S')),
         'system': system,
         'hosts': {},
         'client_files': glob(path.split(path.realpath(__file__))[0] + "/*.py*"),
@@ -260,7 +260,7 @@ def finalize_measurement_cohort(cohort, experiment, samples, runtime):
         else:
             cfg['leader'] = oobip
             cfg['ping_deps'].append(cohort[0]['ip'])
-            if not support_loopback(): cfg['before'] = cfg.get('before', []) + ['sleep_5']
+            cfg['before'] = cfg.get('before', []) + ['sleep_5']
 
 ########################## EXPERIMENTS ###############################
 

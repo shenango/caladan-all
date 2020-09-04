@@ -2,24 +2,12 @@ from os import path
 from subprocess import check_output
 from globals import *
 
-THISHOST = check_output("hostname -s", shell=True).strip().decode('utf-8')
-SCRIPT_DIR = path.split(path.realpath(__file__))[0]
-
-from base_dir import BASE_DIR
-SDIR = "{}/shenango".format(BASE_DIR)
-ZDIR = "{}/zygos-bench/".format(BASE_DIR)
-CLIENT_BIN = "{}/apps/synthetic/target/release/synthetic".format(SDIR)
-
-RSTAT = SDIR + "/scripts/rstat.go"
-STORAGE_HOST = "zig"
-
 NETPFX = "10.11.1"
 set_pfx(NETPFX)
 NETMASK = "255.255.255.0"
 GATEWAY = IP(1)
-OBSERVER = None
 
-CLIENT_SET = ["pd10"]
+CLIENT_SET = ["pd10", "pd11", "pd9", "pd3", "pd4"]
 
 MACHINES = {}
 MACHINES["zag"] = {
@@ -61,6 +49,17 @@ MACHINES['pd10']['nics']['10gp1']['mac'] = "f4:52:14:76:a4:b0"
 MACHINES['pd4']['nics']['10gp1']['mac'] = "f4:52:14:76:a4:80"
 MACHINES['pd3']['nics']['10gp1']['mac'] = "f4:52:14:76:a1:a0"
 
+THISHOST = check_output("hostname -s", shell=True).strip().decode('utf-8')
+SCRIPT_DIR = path.split(path.realpath(__file__))[0]
+
+from base_dir import BASE_DIR
+SDIR = "{}/shenango".format(BASE_DIR)
+ZDIR = "{}/zygos-bench/".format(BASE_DIR)
+CLIENT_BIN = "{}/apps/synthetic/target/release/synthetic".format(SDIR)
+OBSERVER = None
+RSTAT = SDIR + "/scripts/rstat.go"
+STORAGE_HOST = "zig"
+
 binaries = {
     'iokerneld': {
         'ht': "{}/iokerneld".format(SDIR),
@@ -95,8 +94,10 @@ binaries = {
     'stress_shm_query': {
         'linux': "{}/apps/netbench/stress_shm_query".format(SDIR),
     },
+    'synthetic': {
+        'shenango': "{}/apps/synthetic/target/release/synthetic --config".format(SDIR),
+    }
 }
-
 
 def thishost_cores():
     return MACHINES[THISHOST]['node0_cores']

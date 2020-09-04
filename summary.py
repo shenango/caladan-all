@@ -11,11 +11,6 @@ import re
 from globals import except_none
 from heapq import merge
 
-AGGREGATE_ALL_APPS = False
-
-if AGGREGATE_ALL_APPS:
-    print("WARNING: AGGREGATING MULTIPLE APPS INTO ONE")
-
 def maybe_trim(l):
     try:
         lx = l.split(" ", 1)
@@ -151,7 +146,8 @@ def parse_loadgen_output(filename):
 def merge_sample_sets(a, b):
     samples = []
     for ea, eb in zip(a, b):
-        assert set(ea.keys()) == set(eb.keys())
+        if not set(ea.keys()) == set(eb.keys()):
+            break
         assert ea['distribution'] == eb['distribution']
         # assert ea['app'] == eb['app']
         if not abs(ea['time'] - eb['time']) < 2:
@@ -286,7 +282,7 @@ def load_loadgen_results(experiment, dirname):
             server_handle = inst.get('app_name')
             if not server_handle:  # support legacy case
                 server_handle = inst['name'].split(".")[1]
-            if not AGGREGATE_ALL_APPS or not app:
+            if 'figure_9b' not in experiment['name'] or not app:
                 app = experiment['apps'][server_handle]
         else:
             app = inst
@@ -382,55 +378,13 @@ def parse_dir(dirname):
     for app in experiment['apps'].values():
         app['output'] = load_shm_query(experiment, app, dirname)
 
-    for appn in experiment['apps'].keys()[:]:
+    for appn in list(experiment['apps'].keys()):
         if appn.endswith("shm_query"):
             realapp = appn.split("_shm_query")[0]
             experiment['apps'][realapp]['output'] = experiment['apps'][appn]['output']
             del experiment['apps'][appn]
  
     return experiment
-
-
-def arrange_2d_results(experiment):
-    header1 = ["system", "name", "transport", "spin", "threads"]
-    header2 = ["offered", "achieved", "min", "max", "p50", "p90",
-               "p99", "p999", "p9999", "distribution", "count", "dropped"]
-    # , "totalcpu"] # "totaloffered", "totalachieved",
-    header3 = ["tput", "baseline", "totalcpu", "totalmembw"]
-    header = header1 + header2 + header3
-    lines = [header]
-    # ncons = 0 # todo.
-
-    hostname = experiment['apps'][sorted(experiment['apps'].keys())[0]]['host']
-
-    for i, time_point in enumerate(experiment['sample_starts']):
-        totalcpu = "NA"  # experiment['mpstat'][hostname][i]
-        # experiment['pcmmemory'][hostname]["Memory (MB/s)"][i] if experiment['pcmmemory'][hostname] else 0
-        totalmembw = "NA"
-        for app_name in sorted(experiment['apps'].keys()):
-            app = experiment['apps'][app_name]
-            out = [app.get(k) for k in header1]
-            if app.get('loadgen'):
-                out += [app['loadgen'][i][k] for k in header2]
-            else:
-                out += [0] * len(header2)
-            if app.get('output'):
-                out += [app['output']['w_datapoints'][i],
-                        app['output']['recorded_baseline']]
-            else:
-                out += [0, 0]
-            out.append(totalcpu)
-            out.append(totalmembw)
-            lines.append(out)
-    return lines
-
-
-def rotate(output_lines):
-    resdict = {}
-    headers = output_lines[0]
-    for i, h in enumerate(headers):
-        resdict[h] = [l[i] for l in output_lines[1:]]
-    return resdict
 
 def do_it_all(dirname):
 
@@ -445,33 +399,15 @@ def do_it_all(dirname):
 
     STAT_F = "{}/stats/".format(dirname)
     RES_F = STAT_F + "results.json"
-    if not os.access(RES_F, os.F_OK):
-        exp = parse_dir(dirname)
-        os.system("mkdir -p " + STAT_F)
-        with open(RES_F, "w") as f:
-            f.write(json.dumps(exp))
-    else:
-        with open(RES_F) as f:
-            exp = json.loads(f.read())
-
-    stats = arrange_2d_results(exp)
-    bycol = rotate(stats)
-
-    maxsz = [max(len(str(l)) for l in bycol[x] + [x]) for x in stats[0]]
-
-    def padded(x, l): return str(x)  # + " " * (l - len(str(x)))
-    with open(STAT_F + "stat.csv", "w") as f:
-        for line in stats:
-            x = ",".join([padded(x, maxsz[i]) for i, x in enumerate(line)])
-            print(x)
-            f.write(x + '\n')
-
-    return bycol
+    exp = parse_dir(dirname)
+    os.system("mkdir -p " + STAT_F)
+    with open(RES_F, "w") as f:
+        f.write(json.dumps(exp))
 
 
 def main():
     nfiles = len(sys.argv) - 1
-    if nfiles > 1:
+    if False and nfiles > 1:
         from multiprocessing import Pool, cpu_count
         p = Pool(min(cpu_count(), nfiles))
         p.imap_unordered(do_it_all, sys.argv[1:])

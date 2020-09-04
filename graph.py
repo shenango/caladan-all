@@ -90,7 +90,8 @@ def fs_to_dataframe(fs):
 
     return pd.concat(frames)
 
-def graph(fs):
+def graph_lc_combos(fs):
+    if not fs: return
     plt.clf()
     result = fs_to_dataframe(fs)
 
@@ -149,13 +150,51 @@ def graph(fs):
 
     fig.set_size_inches(12, 6)
     fig.tight_layout()
-    plt.savefig('/tmp/lcs.pdf')
+    plt.savefig('lcs_combos.pdf')
+
+def graph_9b(fs):
+    plt.clf()
+    for file in fs:
+        if "figure_9b" not in file: continue
+        if "-pinned" in file:
+            name = "pinned"
+        else:
+            name = "ksched"
+        plt.plot(fs[f]['achieved'], fs[f]['p999'], label=name)
+    plt.legend()
+    plt.ylabel("99.9th% (us)")
+    plt.xlabel("RPS")
+    plt.savefig("figure_9b.pdf")
+
+def graph_9b(fs):
+    if not fs: return
+    plt.clf()
+    lines = 0
+    for file in fs:
+        if "figure_9b" not in file: continue
+        if "-spinning" in file:
+            name = "pinned"
+        elif "ksched" in file:
+            name = "ksched"
+        df = fs_to_dataframe({file: fs[file]})
+        plt.plot(df['achieved'], df['p999'], label=name)
+        lines += 1
+    if not lines: return
+    plt.legend()
+    plt.ylabel("99.9th% (us)")
+    plt.xlabel("RPS")
+    plt.savefig("figure_9b.pdf")
 
 def main():
     fs = {}
     for f in sys.argv[1:]:
+        if "memcached_trace" in f:
+            import graph_timeseries
+            graph_timeseries.graph_experiment(f)
+            continue
         fs.update(read_file(f))
-    graph(fs)
+    graph_lc_combos({f: fs[f] for f in fs if "figure_7" in f})
+    graph_9b(fs)
 
 if __name__ == '__main__':
     main()

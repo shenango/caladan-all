@@ -35,6 +35,21 @@ The experiment scripts assume that binaries are located at the same absolute
 paths on client and server machines, so please use the same directory names.
 
 
+## Experiment Scripts
+This repository contains a collection of python scripts to execute experiments
+from the Caladan paper and to graph the results. 
+
+Each experiment run produces a folder with data collected from the run. To graph
+the data, run `python3 graph.py <folder1> <folder2>...`.
+
+#### env.py
+This file describes the testing environment and should be modified to reflect your setup. We include the default setup for running on our testbed as an example. `MACHINES` should contain information about each of the machines in the testbed, and `CLIENT_SET` should contain the set of machines used to generate load.
+
+Each machine is assumed to have (A) a management interface with its own address (`oob_ip`) that is used for SSH connections and launching experiments and (B) a NIC used for the experiment.
+
+
+
+
 <!-- For instructions on building ZygOS or Memcached for ZygOS, please see
 [their repositories](https://github.com/ix-project). After building
 ZygOS, the spin server can be built with:
@@ -47,7 +62,13 @@ else on Ubuntu 18.04.
 
 ## Running
 
-To run the experiments, first run the installation instructions above
+To run the experiments, follow the above instructions. `paper_experiments.py` includes the configurations for several of the main experiments in the paper. 
+
+
+Each
+
+
+first run the installation instructions above
 on your server. On your clients, clone the Shenango repo in your home
 directory and build it (the experiments will use the iokernel built
 there). Next, on the server, modify `experiment.py` so that the IPs,

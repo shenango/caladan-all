@@ -31,6 +31,9 @@ cd caladan-artifact
 ./build_client.sh
 ```
 
+The experiment scripts assume that binaries are located at the same absolute
+paths on client and server machines, so please use the same directory names.
+
 
 <!-- For instructions on building ZygOS or Memcached for ZygOS, please see
 [their repositories](https://github.com/ix-project). After building

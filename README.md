@@ -44,7 +44,14 @@ paths on client and server machines, so please use the same directory names.
 
 ## Experiment Scripts
 This repository contains a collection of python scripts to execute experiments
-from the Caladan paper and to graph the results. 
+from the Caladan paper and to graph the results.
+
+The experiment scripts require python3 and several libraries installed via pip3.
+
+```
+pip3 install matplotlib
+pip3 install pandas
+```
 
 Each experiment run produces a folder with data collected from the run. To graph
 the data, run `python3 graph.py <folder1> <folder2>...`.

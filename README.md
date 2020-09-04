@@ -11,6 +11,7 @@ This code was tested on Ubuntu 18.04 kernel version 5.2.0 on a server with a Mel
 Client machines require either an Intel 82599 based-NIC or a ConnectX-{3,4,5} Mellanox NIC.
 
 ## Installing prereqs
+First, install any needed packages:
 ```
 sudo apt install build-essential libnuma-dev clang autoconf autotools-dev m4 automake libevent-dev  libpcre++-dev libtool ragel libev-dev moreutils parallel cmake python3 python3-pip libjemalloc-dev libaio-dev libdb5.3++-dev numactl hwloc
 ```
@@ -48,13 +49,12 @@ from the Caladan paper and to graph the results.
 Each experiment run produces a folder with data collected from the run. To graph
 the data, run `python3 graph.py <folder1> <folder2>...`.
 
-The scripts assume that passwordless SSH and sudo are setup on all the machines in the testbed. 
+The scripts assume that passwordless SSH and passwordless sudo are setup on all the machines in the testbed. 
 
 #### env.py
 This file describes the testing environment and should be modified to reflect your setup. We include the default setup for running on our testbed as an example. `MACHINES` should contain information about each of the machines in the testbed, and `CLIENT_SET` should contain the set of machines used to generate load.
 
 Each machine is assumed to have (A) a management interface with its own address (`oob_ip`) that is used for SSH connections and launching experiments and (B) a NIC used for the experiment.
-
 
 
 ## Running

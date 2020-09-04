@@ -140,31 +140,19 @@ def lc_sweep(lc='memcached', be='streamcluster', config='caladan', samples=NSAMP
         pass
 
 
-def multi_time_step(
-        cfg='caladan', ht_en=True, spin=False, burst=True, be=True, trace_enabled=True,
-        lcs=["memcached", "silo", "storage"],
-        load_points=4,
-        be_select=["streamcluster", "swaptionsGC"]):
-
-    nn = "-multi"
-    if ht_en:
-        nn += "-ht_controller"
-    if spin:
-        nn += "-spin"
-    if burst:
-        nn += "-burst"
-    if be:
-        nn += "-be"
+def multi_time_step(cfg='caladan', trace_enabled=True):
+    nn = "-" + cfg + "-multiapp"
     x = new_experiment("shenango", name=nn)
 
-    STEPS = load_points
+    STEPS = 4
     MEMC_T = 6
     SILO_T = 6
     STORAG_T = 6
+    BURST_ENABLED = True
+    HT_CONTROLLER_ENABLED = True
+    spin = False
 
-    BURST_ENABLED = burst
-    HT_CONTROLLER_ENABLED = ht_en
-
+    lcs = ["memcached", "silo", "storage"]
     ch = []
 
     if "memcached" in lcs:
@@ -207,17 +195,15 @@ def multi_time_step(
         ch += new_measurement_instances(1, st, 0.293979 * STORAG_T / 22.0, x,
                                         nconns=75, mean=16, distribution="bimodal1", client_list=['zag'])
 
-    if be:
-        for be in be_select:
-            be, tracer = BE_CONFIGS[be](max_cores(), x)
-            if trace_enabled:
-                tracer['frequency_us'] = 1000
+    for be in ["streamcluster", "swaptionsGC"]:
+        be, tracer = BE_CONFIGS[be](max_cores(), x)
+        if trace_enabled:
+            tracer['frequency_us'] = 1000
 
     for c in ch:
         mload = c['mpps']
 
-        if "swaptionsGC" in be_select:
-            c['before'] += ['sleep_5'] * 6
+        c['before'] += ['sleep_5'] * 6
 
         loads = []
         loads.append((1e6 * mload * 0.03, 5e6, 0))
@@ -228,23 +214,14 @@ def multi_time_step(
         loads.append((1e6 * mload * 0.03, 1e6))
         loads.append((1e6 * mload * 0.03, 1e6))
         loads.append((1e6 * mload * 0.03, 1e6))
-        # if "memcached" in lcs and not disable_bg_tasks:
-        #     loads.append((1e6 * mload * 0.03, 40e6, 0))
 
-        # loads += [(0, 1e6, 0)]
         loads += [(0.5 * 1e6 * mload / STEPS, 1e6)]
         for i in range(1, int(STEPS) + 1):
             loads.append((1e6 * mload * i / STEPS, 4e6))
             if trace_enabled:
                 loads.append((0.5 * 1e6 * mload / STEPS, 4e6))
 
-        # loads = [(1e6 * mload/ STEPS, 1e6)] + [
-        #     (1e6 * mload * i / STEPS, 2e5) for i in range(1, int(STEPS) + 1)
-        # ]
-
-        rampup = []  # (l[0], 5e5, 0) for l in loads[:len(loads)//2]]
-
-        loads = map(lambda f: ":".join(map(str, map(int, f))), rampup + loads)
+        loads = map(lambda f: ":".join(map(str, map(int, f))), loads)
         loads = " --loadshift=" + ",".join(loads)
         c['args'] += loads
         if trace_enabled:
@@ -287,12 +264,10 @@ def figure_9c_controllers():
              name="figure_9c_No_Colocation")
 
 def main():
-    # figure_8_multi_app_timeseries()
-    # exit(0)
-    # figure_9b_scheduling()
-    # figure_9c_controllers()
-    # exit(0)
-    # figure_6_timeseries()
+    figure_8_multi_app_timeseries()
+    figure_9b_scheduling()
+    figure_9c_controllers()
+    figure_6_timeseries()
     for lc in ["storage", "silo", "memcached"]:
         for be in ["x264", "streamcluster", "streamDRAM", "swaptionsGC", None]:
             lc_sweep(lc=lc, be=be, config='caladan')

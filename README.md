@@ -59,5 +59,7 @@ Each machine is assumed to have (A) a management interface with its own address 
 
 ## Running
 
-To run the experiments, follow the above instructions to build and setup your environment. Run `python3 paper_experiments.py` to run all the experiments.
+To run the experiments, follow the above instructions to build and setup your environment. Run `python3 paper_experiments.py` to run all the experiments. The total runtime depends on the configured number of samples and sample durations (found at the top of `paper_experiments.py`).
+
+After the experiments complete, run `python3 graph.py run.2*` to generate graphs from each experiment (saved as pdfs).
 

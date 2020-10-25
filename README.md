@@ -2,7 +2,7 @@
 
 This repository includes Caladan and several applications that were evaluated in the Caladan paper submitted to OSDI '20.
 
-The main Caladan source code repository is linked as a submodule (caladan-ae).
+The main Caladan source code repository is linked as a submodule.
 It contains instructions for getting started with Caladan, and more details on supported platforms and use cases.
 
 This repository contains scripts to facilitate building the applications used in the evaluation and running experiments from the paper.

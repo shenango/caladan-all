@@ -101,12 +101,12 @@ def runcmd(*args, **kwargs):
 
 def launch_para(cmd, inputs, die_on_failure=True, **kwargs):
     fail = "--halt now,success=1" if die_on_failure else ""
-    cmd = "PARALLEL_SHELL={} parallel {} \"{}\" ::: {}".format(SHELL, fail, cmd, " ".join(inputs))
+    cmd = "PARALLEL_SHELL={} parallel -j {} {} \"{}\" ::: {}".format(SHELL, len(inputs), fail, cmd, " ".join(inputs))
     return launch(cmd, **kwargs)
 
 def runpara(cmd, inputs, die_on_failure=False, **kwargs):
     fail = "--halt now,success=1" if die_on_failure else ""
-    cmd = "PARALLEL_SHELL={} parallel {} \"{}\" ::: {}".format(SHELL, fail, cmd, " ".join(inputs))
+    cmd = "PARALLEL_SHELL={} parallel -j {} {} \"{}\" ::: {}".format(SHELL, len(inputs), fail, cmd, " ".join(inputs))
     return runcmd(cmd, **kwargs)
 
 def runremote(cmd, hosts, **kwargs):

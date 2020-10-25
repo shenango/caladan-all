@@ -245,7 +245,7 @@ def configure_caladan(name, experiment, host=None):
     host = host or THISHOST
     options = []
     if "nobw" in name: options.append("nobw")
-    if "selfpair" not in name: options.append("mutualpair")
+    if "selfpair" in name: options.append("selfpair")
 
     sched = 'ias'
     if "SIMPLE" in name:

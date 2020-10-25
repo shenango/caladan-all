@@ -12,33 +12,33 @@ git submodule update --init --recursive
 
 # Enable build options for testbed machines
 for config in MLX5 SPDK DIRECTPATH; do
- sed "s/CONFIG_${config}=.*/CONFIG_${config}=y/g" -i shenango/build/config
+ sed "s/CONFIG_${config}=.*/CONFIG_${config}=y/g" -i caladan/build/config
 done
 
-pushd shenango
+pushd caladan
 build/init_submodules.sh
 popd
 
 echo building SNAPPY
-pushd shenango/apps/storage_service
+pushd caladan/apps/storage_service
 ./snappy.sh
 popd
 
-echo building SHENANGO
-for dir in shenango shenango/shim shenango/bindings/cc shenango/apps/storage_service shenango/apps/netbench; do
+echo building CALADAN
+for dir in caladan caladan/shim caladan/bindings/cc caladan/apps/storage_service caladan/apps/netbench; do
 	make -C $dir
 done
 
-pushd shenango/ksched
+pushd caladan/ksched
 make
 popd
 
 echo building LOADGEN
-pushd shenango/apps/synthetic
+pushd caladan/apps/synthetic
 cargo build --release
 popd
 
-export SHENANGODIR=$SCRIPTPATH/shenango
+export SHENANGODIR=$SCRIPTPATH/caladan
 
 echo building SILO
 pushd  silo
@@ -49,7 +49,7 @@ popd
 echo building MEMCACHED
 pushd memcached
 ./autogen.sh
-./configure --with-shenango=$SCRIPTPATH/shenango
+./configure --with-shenango=$SCRIPTPATH/caladan
 make
 popd
 pushd memcached-linux
@@ -61,7 +61,7 @@ popd
 echo building BOEHMGC
 pushd gc
 ./autogen.sh
-./configure --prefix=$SCRIPTPATH/gc/build --enable-static --enable-large-config --enable-handle-fork=no --enable-dlopen=no --disable-java-finalization --enable-threads=shenango --enable-shared=no --with-shenango=$SCRIPTPATH/shenango
+./configure --prefix=$SCRIPTPATH/gc/build --enable-static --enable-large-config --enable-handle-fork=no --enable-dlopen=no --disable-java-finalization --enable-threads=shenango --enable-shared=no --with-shenango=$SCRIPTPATH/caladan
 make install
 popd
 

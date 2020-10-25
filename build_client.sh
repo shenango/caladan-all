@@ -8,37 +8,14 @@ SCRIPT=$(readlink -f "$0")
 SCRIPTPATH=$(dirname "$SCRIPT")
 echo "BASE_DIR = '${SCRIPTPATH}/'" > base_dir.py
 
-CORES=`getconf _NPROCESSORS_ONLN`
-
-git submodule update --init -f --recursive caladan-ae
+git submodule update --init -f --recursive caladan
 
 if lspci | grep -q 'ConnectX-3'; then
-  sed "s/CONFIG_MLX4=.*/CONFIG_MLX4=y/g" -i caladan-ae/build/config
-elif lspci | grep -q 'ConnectX-[4,5]'; then
-  for config in MLX5 DIRECTPATH; do
-    sed "s/CONFIG_${config}=.*/CONFIG_${config}=y/g" -i caladan-ae/build/config
-  done
+ sed "s/CONFIG_MLX4=.*/CONFIG_MLX4=y/g" -i caladan/build/config
 fi
 
-echo building DPDK
-pushd caladan-ae
-patch -p 1 -d dpdk/ < build/ixgbe_19_11.patch
-if lspci | grep -q 'ConnectX-[4,5]'; then
-  patch -p 1 -d dpdk/ < build/mlx5_19_11.patch
-elif lspci | grep -q 'ConnectX-3'; then
-  patch -p 1 -d dpdk/ < build/mlx4_19_11.patch
-fi
-make -C dpdk/ config T=x86_64-native-linuxapp-gcc
-make -C dpdk/ -j $CORES
-
-if lspci | grep -q 'ConnectX-5'; then
-echo building RDMA-CORE
-pushd rdma-core
-git apply ../build/rdma-core.patch
-EXTRA_CMAKE_FLAGS=-DENABLE_STATIC=1 MAKEFLAGS=-j$CORES ./build.sh
-popd
-fi
-
+pushd caladan
+make submodules
 make
 
 pushd ksched

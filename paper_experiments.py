@@ -192,8 +192,8 @@ def multi_time_step(cfg='caladan', trace_enabled=True):
             st['custom_conf'].append('runtime_ht_punish_us 40')
         if spin:
             st['spin'] = STORAG_T
-        ch += new_measurement_instances(1, st, 0.293979 * STORAG_T / 22.0, x,
-                                        nconns=75, mean=16, distribution="bimodal1", client_list=['zag'])
+        ch += new_measurement_instances(1, st, 0.52 * STORAG_T / 22.0, x,
+                                        nconns=75, mean=16, distribution="bimodal3", client_list=['zag'])
 
     for be in ["streamcluster", "swaptionsGC"]:
         be, tracer = BE_CONFIGS[be](max_cores(), x)
@@ -236,7 +236,7 @@ def multi_time_step(cfg='caladan', trace_enabled=True):
 
 def figure_7_lc_be_combos():
     for lc in ["memcached", "storage", "silo"]:
-        for be in ["x264", "streamcluster", "streamDRAM", "swaptionsGC", None]:
+        for be in ["x264", "streamcluster", "streamL2", "streamDRAM", "swaptionsGC", None]:
             lc_sweep(lc=lc, be=be, name="figure_7")
 
 

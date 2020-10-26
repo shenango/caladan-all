@@ -7,7 +7,12 @@ set_pfx(NETPFX)
 NETMASK = "255.255.255.0"
 GATEWAY = IP(1)
 
-CLIENT_SET = ["pd10", "pd11", "pd9", "pd3", "pd4"]
+
+SERVER_PHYS_CORES = 11
+SERVER_L2 = 256 * 1024
+SERVER_L3 = 30 * 1024 * 1024
+
+CLIENT_SET = ["pd10", "pd11", "pd9", "pd3", "pd7", "zag"]
 
 MACHINES = {}
 MACHINES["zag"] = {

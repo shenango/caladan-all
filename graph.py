@@ -106,13 +106,14 @@ def graph_lc_combos(fs):
         'x264': 56.8336,
         'streamcluster': 926049,
         'swaptionsGC': 2326233.0 / 142.0,
-        'streamDRAM': 1945.0,
+        'streamDRAM': 5840.631460038528,
+        'streamL2': 50161.1099851102,
     }
 
     for i, l in enumerate(lcs):
         rs = result[result.lc_app == l]
 
-        for be in ['x264', 'streamcluster', 'swaptionsGC', 'streamDRAM', 'No BE']:
+        for be in ['x264', 'streamcluster', 'swaptionsGC', 'streamL2', 'streamDRAM', 'No BE']:
             bs = rs[rs.be_name == be]
             for h, r in bs.groupby('tag'):
                 s = set(r['sample_order'])

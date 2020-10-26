@@ -186,11 +186,23 @@ def x264(cores, experiment):
     be_st['appthreads'] = 1
     return be, be_st
 
-def hammer(cores, experiment, **kwargs):
+def streamDRAM(cores, experiment, **kwargs):
     if 'name' not in kwargs: kwargs['name'] = "streamDRAM"
     lc = new_stress_shm_inst(cores, experiment, **kwargs)
-    lc['fakework'] = 'cacheantagonist:4090880'
-    lc['iters'] = 10
+    region = (SERVER_L3 // int(0.7 * SERVER_PHYS_CORES)) & ~0x3f
+    lc['fakework'] = 'cacheantagonist:{}'.format(region)
+    lc['iters'] = 1
+    lc['spin'] = cores
+    lc['args'] += " use_barrier"
+    s = new_stress_shm_query(lc, experiment)
+    return lc, s
+
+def streamL2(cores, experiment, **kwargs):
+    if 'name' not in kwargs: kwargs['name'] = "streamL2"
+    lc = new_stress_shm_inst(cores, experiment, **kwargs)
+    region = int(SERVER_L2 / 3.5) & ~0x3f
+    lc['fakework'] = 'cacheantagonist:{}'.format(region)
+    lc['iters'] = 100
     s = new_stress_shm_query(lc, experiment)
     return lc, s
 
@@ -199,19 +211,12 @@ def sqrt(cores, experiment, **kwargs):
     s = new_stress_shm_query(lc, experiment)
     return lc, s
 
-def hammersmall(cores, experiment, **kwargs):
-    lc = new_stress_shm_inst(cores, experiment, **kwargs)
-    lc['fakework'] = 'cacheantagonist:2000000'
-    lc['iters'] = 10
-    s = new_stress_shm_query(lc, experiment)
-    return lc, s
-
 BE_CONFIGS = {
     'swaptionsGC': new_swaptionsGC,
     'streamcluster': streamcluster,
     'x264': x264,
-    'streamDRAM': hammer,
-    'hammersmall': hammersmall,
+    'streamDRAM': streamDRAM,
+    'streamL2': streamL2,
     'sqrt': sqrt,
 }
 
@@ -287,9 +292,9 @@ def conf_to_sysname(name):
 def storage(cores, experiment, mpps=None, **kwargs):
     l = new_storage_server(cores, experiment)
 
-    mpps = mpps or 0.33
+    mpps = mpps or 0.52
     start_mpps = kwargs.get('start_mpps', 0)
-    dist = kwargs.get('distribution', 'bimodal1')
+    dist = kwargs.get('distribution', 'bimodal3')
     ch = new_measurement_instances(1, l, mpps, experiment, nconns=400, client_list=['zag'], mean=16, distribution=dist, start_mpps=start_mpps)
     return l, ch
 

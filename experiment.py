@@ -415,7 +415,7 @@ def switch_to_shenango(exp):
         runcmd(
             "sudo {}/dpdk/usertools/dpdk-devbind.py -b igb_uio {}".format(SDIR, NIC_PCI))
 
-    shenango_latency_tuning()
+    #shenango_latency_tuning()
 
 ############################# APPLICATIONS ###########################
 

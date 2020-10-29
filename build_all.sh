@@ -3,21 +3,9 @@
 set -e
 set -x
 
-# record BASE_DIR
-SCRIPT=$(readlink -f "$0")
-SCRIPTPATH=$(dirname "$SCRIPT")
-echo "BASE_DIR = '${SCRIPTPATH}/'" > base_dir.py
+git submodule update --init -f --recursive
 
-git submodule update --init --recursive
-
-# Enable build options for testbed machines
-for config in MLX5 SPDK DIRECTPATH; do
- sed "s/CONFIG_${config}=.*/CONFIG_${config}=y/g" -i caladan/build/config
-done
-
-pushd caladan
-build/init_submodules.sh
-popd
+. build_client.sh
 
 echo building SNAPPY
 pushd caladan/apps/storage_service
@@ -29,14 +17,6 @@ for dir in caladan caladan/shim caladan/bindings/cc caladan/apps/storage_service
 	make -C $dir
 done
 
-pushd caladan/ksched
-make
-popd
-
-echo building LOADGEN
-pushd caladan/apps/synthetic
-cargo build --release
-popd
 
 export SHENANGODIR=$SCRIPTPATH/caladan
 

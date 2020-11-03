@@ -5,8 +5,8 @@ import random
 
 # controls how many samples are collected (and duration) for experiments
 # that sweep multiple QPSs. Add more time for better quality samples.
-NSAMPLES = 10
-TIME = 5
+NSAMPLES = 20
+TIME = 10
 
 
 def ksched_stress(config='caladan', be='sqrt', spin=False, name=None):

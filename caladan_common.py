@@ -23,6 +23,18 @@ def new_stress_shm_inst(threads, experiment, **kwargs):
     add_app(experiment, x, **kwargs)
     return x
 
+def silo_wait(cfg, experiment):
+    fname = "{name}.out".format(**cfg)
+    while not experiment['tm'].is_done():
+        if os.system("pgrep silo > /dev/null 2>&1") != 0:
+            time.sleep(0.2)
+            continue
+        if os.system("grep -q -e 'starting linux server' -e 'listening for connections' {}/{}".format(experiment['name'], fname)) == 0:
+            break
+        time.sleep(1)
+
+register_fn('silo_wait', silo_wait)
+
 def new_silo_server(threads, experiment, **kwargs):
     x = {
         'system': kwargs.get('system', experiment['system']),
@@ -40,7 +52,7 @@ def new_silo_server(threads, experiment, **kwargs):
         'args': '{threads} {port} {mem}',
         'mem': 14 * (1 << 30),
         'env': ["LD_LIBRARY_PATH={}/silo/silo/third-party/lz4".format(BASE_DIR)],
-        'after': ['sleep_5', 'sleep_5', 'release_clients'],
+        'after': ['silo_wait', 'release_clients'],
     }
 
     assert not experiment.get('manual_client_release')

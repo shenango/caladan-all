@@ -157,20 +157,6 @@ def graph_lc_combos(fs):
 
 def graph_9b(fs):
     plt.clf()
-    for file in fs:
-        if "figure_9b" not in file: continue
-        if "-pinned" in file:
-            name = "pinned"
-        else:
-            name = "ksched"
-        plt.plot(fs[f]['achieved'], fs[f]['p999'], label=name)
-    plt.legend()
-    plt.ylabel("99.9th% (us)")
-    plt.xlabel("RPS")
-    plt.savefig("figure_9b.pdf")
-
-def graph_9b(fs):
-    plt.clf()
     lines = 0
     for file in fs:
         if "figure_9b" not in file: continue
@@ -182,6 +168,7 @@ def graph_9b(fs):
         plt.plot(df['achieved'], df['p999'], label=name)
         lines += 1
     if not lines: return
+    plt.ylim(0, 1000)
     plt.legend()
     plt.ylabel("99.9th% (us)")
     plt.xlabel("RPS")
@@ -198,6 +185,7 @@ def graph_9c(fs):
         plt.plot(df['achieved'], df['p999'], label=name)
         lines += 1
     if not lines: return
+    plt.ylim(0, 1500)
     plt.legend()
     plt.ylabel("99.9th% (us)")
     plt.xlabel("RPS")

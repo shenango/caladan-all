@@ -169,6 +169,7 @@ def graph_experiment_figure6(directory):
             axs[1].set_ylim(0, 1.25 * max(z))
             earliest_ts = tm_tsc[0]
             latest_ts = tm_tsc[-1]
+    axs[0].set_ylim(0, 100)
     axs[1].legend()
     axs[0].legend()
     read_mem(directory, earliest_ts, latest_ts, cycles_per_us, axs[2])
@@ -211,7 +212,7 @@ def graph_experiment_figure8(directory):
         axs[3].plot(x, z, label=app)
         axs[i].legend()
         axs[3].set_ylabel("LC\nThroughput (%)")
-        axs[3].set_ylim(0, 1.25 * max(z))
+        axs[3].set_ylim(0, 100 if app == "memcached" else 1000)
     axs[3].legend()
     for be in ["swaptionsGC", "streamcluster"]:
         parse_shmlog("{}/{}_shm_query.out".format(directory, be), min_tsc, max_tsc, cycles_per_us, axs[4])
